@@ -16,17 +16,28 @@
 """Config Parameter Modeling and Parsing"""
 
 from functools import lru_cache
+from typing import Optional
 
+from ghga_service_chassis_lib.api import ApiConfigBase
 from ghga_service_chassis_lib.config import config_from_yaml
 from ghga_service_chassis_lib.pubsub import PubSubConfigBase
 
 
 @config_from_yaml(prefix="drs3")
-class Config(PubSubConfigBase):
+class Config(ApiConfigBase, PubSubConfigBase):
     """Config parameters and their defaults."""
 
     # config parameter needed for rabbitmq server
     # are inherited from PubSubConfigBase;
+
+    drs_self_url: str = "drs://localhost:8080/"
+    api_route: str = "/ga4gh/drs/v1"
+    custom_spec_url: Optional[str] = None
+    rabbitmq_host: str = "rabbitmq"
+    rabbitmq_port: int = 5672
+    topic_name_download_requested: str = "download_request"
+    db_url: str = "postgresql://admin:admin@postgresql/storage"
+    s3_url: str = "http://s3-localstack:4566"
 
 
 @lru_cache
