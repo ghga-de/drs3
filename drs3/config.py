@@ -16,20 +16,25 @@
 """Config Parameter Modeling and Parsing"""
 
 from functools import lru_cache
-from typing import Optional
+from typing import Literal, Optional, Sequence
 
 from ghga_service_chassis_lib.config import config_from_yaml
 from ghga_service_chassis_lib.pubsub import PubSubConfigBase
+from pydantic import BaseSettings
+
+LogLevel = Literal["critical", "error", "warning", "info", "debug", "trace"]
 
 
-@config_from_yaml(prefix="drs3")
-class Config(PubSubConfigBase):
-    """Config parameters and their defaults."""
+class DRS3ConfigBase(BaseSettings):
 
-    # config parameter needed for rabbitmq server
-    # are inherited from PubSubConfigBase;
+    """A base class with the drs3-specific required config params"""
 
-    drs_self_url: str = "drs://localhost:8080/"
+    host: str = "127.0.0.1"
+    port: int = 8080
+    log_level: LogLevel = "info"
+    auto_reload: bool = False
+    workers: int = 1
+
     api_route: str = "/ga4gh/drs/v1"
     custom_spec_url: Optional[str] = None
     rabbitmq_host: str = "rabbitmq"
@@ -37,6 +42,25 @@ class Config(PubSubConfigBase):
     topic_name_download_requested: str = "download_request"
     db_url: str = "postgresql://admin:admin@postgresql/storage"
     s3_url: str = "http://s3-localstack:4566"
+
+    # Starlettes defaults will only be overwritten if a
+    # non-None value is specified:
+    cors_allowed_origins: Optional[Sequence[str]] = None
+    cors_allow_credentials: Optional[bool] = None
+    cors_allowed_methods: Optional[Sequence[str]] = None
+    cors_allowed_headers: Optional[Sequence[str]] = None
+    drs_self_url: str = "drs://localhost:8080/"
+
+
+@config_from_yaml(prefix="drs3")
+class Config(DRS3ConfigBase, PubSubConfigBase):
+    """Config parameters and their defaults."""
+
+    # config parameter needed for rabbitmq server
+    # are inherited from PubSubConfigBase;
+
+    # config parameter needed for drs3
+    # are inherited from DRS3ConfigBase;
 
 
 @lru_cache
