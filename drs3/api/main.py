@@ -24,15 +24,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import boto3
 from pyramid.config import Configurator
-from pyramid.httpexceptions import HTTPBadRequest, HTTPNotFound
+from pyramid.events import NewRequest
+from pyramid.httpexceptions import HTTPNotFound
 from pyramid.request import Request
 from pyramid.view import view_config
 
 from ..config import get_config
+from ..custom_openapi3.custom_explorer_view import add_custom_explorer_view
 from ..dao.db import get_session
 from ..dao.db_models import DrsObject
+from .cors import cors_header_response_callback_factory
 
 CONFIG_SETTINGS = get_config()
 S3_URL = CONFIG_SETTINGS.s3_url
@@ -111,13 +113,14 @@ def get_app(config_settings=CONFIG_SETTINGS) -> Any:
     api_route = Path(config_settings.api_route)
     openapi_spec_path = Path(__file__).parent / "openapi.yaml"
     with Configurator() as pyramid_config:
-        # pyramid_config.add_directive(
-        #     "pyramid_custom_openapi3_add_explorer", add_custom_explorer_view
-        # )
+        pyramid_config.add_directive(
+            "pyramid_custom_openapi3_add_explorer", add_custom_explorer_view
+        )
 
-        # pyramid_config.add_subscriber(
-        #     cors_header_response_callback_factory(config_settings), NewRequest
-        # )
+        pyramid_config.add_subscriber(
+            cors_header_response_callback_factory(config_settings), NewRequest
+        )
+
         pyramid_config.include("pyramid_openapi3")
         pyramid_config.pyramid_openapi3_spec(
             openapi_spec_path, route=str(api_route / "openapi.yaml")
@@ -191,60 +194,6 @@ def get_objects_id(request: Request) -> DrsReturnObject:
 
     raise HTTPNotFound(
         json={"msg": "The requested 'DrsObject' wasn't found", "status_code": 404}
-    )
-
-
-@view_config(
-    route_name="objects_id_access_id",
-    renderer="json",
-    openapi=True,
-    request_method="GET",
-)
-def get_objects_id_access_id(request: Request) -> AccessURL:
-    """
-    Get a URL for fetching bytes.
-    Args:
-        request: An instance of ``pyramid.request.Request``
-    Returns:
-        An instance of ``AccessURL``
-    """
-
-    object_id = request.matchdict["object_id"]
-    access_id = request.matchdict["access_id"]
-
-    db = get_session()
-    target_object = (
-        db.query(DrsObject).filter(DrsObject.drs_id == object_id).one_or_none()
-    )
-
-    if target_object is None:
-        raise HTTPBadRequest(
-            json={"msg": "The requested 'DrsObject' wasn't found", "status_code": 400}
-        )
-
-    if access_id == "s3":
-        # send_message(object_id, access_id, "user_id")
-
-        # Connect to s3
-        s3_client = boto3.client(
-            service_name="s3",
-            endpoint_url=S3_URL,
-        )
-
-        # Get presigned URL
-        response = s3_client.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": "test", "Key": object_id},
-            ExpiresIn=86400,
-        )
-
-        # change path to localhost
-        path = "http://localhost:4566" + response.removeprefix(CONFIG_SETTINGS.s3_url)
-
-        return AccessURL(url=path)
-
-    raise HTTPBadRequest(
-        json={"msg": "The requested access method does not exist", "status_code": 400}
     )
 
 

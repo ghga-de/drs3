@@ -13,7 +13,7 @@ s3_url: http://s3-localstack:4566
 workers: 1
 auto_reload: true
 
-cors_allowed_origins: List[str] = []
-cors_allow_credentials: bool = False
-cors_allowed_methods: List[str] = []
-cors_allowed_headers: List[str] = []
+cors_allowed_origins: []
+cors_allow_credentials: False
+cors_allowed_methods: []
+cors_allowed_headers: []

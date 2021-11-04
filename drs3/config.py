@@ -16,7 +16,7 @@
 """Config Parameter Modeling and Parsing"""
 
 from functools import lru_cache
-from typing import Literal, Optional, Sequence
+from typing import List, Literal, Optional
 
 from ghga_service_chassis_lib.config import config_from_yaml
 from ghga_service_chassis_lib.pubsub import PubSubConfigBase
@@ -42,14 +42,12 @@ class DRS3ConfigBase(BaseSettings):
     topic_name_download_requested: str = "download_request"
     db_url: str = "postgresql://admin:admin@postgresql/storage"
     s3_url: str = "http://s3-localstack:4566"
-
-    # Starlettes defaults will only be overwritten if a
-    # non-None value is specified:
-    cors_allowed_origins: Optional[Sequence[str]] = None
-    cors_allow_credentials: Optional[bool] = None
-    cors_allowed_methods: Optional[Sequence[str]] = None
-    cors_allowed_headers: Optional[Sequence[str]] = None
     drs_self_url: str = "drs://localhost:8080/"
+
+    cors_allowed_origins: List[str] = []
+    cors_allow_credentials: bool = False
+    cors_allowed_methods: List[str] = []
+    cors_allowed_headers: List[str] = []
 
 
 @config_from_yaml(prefix="drs3")
