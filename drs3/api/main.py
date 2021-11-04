@@ -31,7 +31,6 @@ from pyramid.request import Request
 from pyramid.view import view_config
 
 from ..config import get_config
-from ..custom_openapi3.custom_explorer_view import add_custom_explorer_view
 from ..dao.db import get_session
 from ..dao.db_models import DrsObject
 
@@ -112,9 +111,9 @@ def get_app(config_settings=CONFIG_SETTINGS) -> Any:
     api_route = Path(config_settings.api_route)
     openapi_spec_path = Path(__file__).parent / "openapi.yaml"
     with Configurator() as pyramid_config:
-        pyramid_config.add_directive(
-            "pyramid_custom_openapi3_add_explorer", add_custom_explorer_view
-        )
+        # pyramid_config.add_directive(
+        #     "pyramid_custom_openapi3_add_explorer", add_custom_explorer_view
+        # )
 
         # pyramid_config.add_subscriber(
         #     cors_header_response_callback_factory(config_settings), NewRequest
