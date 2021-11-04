@@ -65,14 +65,13 @@ def add_custom_explorer_view(  # pylint: disable=too-many-arguments
                 template = Template(file.read())
                 spec_url = (
                     custom_spec_url
-                    if custom_spec_url
+                    if custom_spec_url and custom_spec_url != "None"
                     else request.route_url(settings[apiname]["spec_route_name"])
                 )
                 html = template.safe_substitute(
                     ui_version=ui_version,
                     spec_url=spec_url,
                 )
-
             return Response(html)
 
         config.add_route(route_name, route)
