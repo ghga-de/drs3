@@ -15,15 +15,9 @@
 
 """Entrypoint of the package"""
 
-from ghga_service_chassis_lib.api import run_server
-
-from .api.main import app  # noqa: F401 pylint: disable=unused-import
-from .config import get_config
-
 
 def run():
     """Run the service"""
-    run_server(app="drs3.__main__:app", config=get_config())
 
 
 if __name__ == "__main__":
