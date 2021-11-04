@@ -18,13 +18,12 @@
 from functools import lru_cache
 from typing import Optional
 
-from ghga_service_chassis_lib.api import ApiConfigBase
 from ghga_service_chassis_lib.config import config_from_yaml
 from ghga_service_chassis_lib.pubsub import PubSubConfigBase
 
 
 @config_from_yaml(prefix="drs3")
-class Config(ApiConfigBase, PubSubConfigBase):
+class Config(PubSubConfigBase):
     """Config parameters and their defaults."""
 
     # config parameter needed for rabbitmq server

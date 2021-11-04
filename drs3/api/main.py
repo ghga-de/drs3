@@ -30,10 +30,10 @@ from pyramid.httpexceptions import HTTPBadRequest, HTTPNotFound
 from pyramid.request import Request
 from pyramid.view import view_config
 
-from .config import get_config
-from .custom_openapi3.custom_explorer_view import add_custom_explorer_view
-from .dao.db import get_session
-from .dao.db_models import DrsObject
+from ..config import get_config
+from ..custom_openapi3.custom_explorer_view import add_custom_explorer_view
+from ..dao.db import get_session
+from ..dao.db_models import DrsObject
 
 CONFIG_SETTINGS = get_config()
 S3_URL = CONFIG_SETTINGS.s3_url
