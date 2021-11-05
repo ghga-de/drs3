@@ -55,10 +55,3 @@ class TestAPI(BaseIntegrationTest):
             and response.json["checksums"][0]["checksum"]  # noqa W503
             == "3e48b55a59a8d521c3a261c6a41ef27e"  # noqa W503
         ), "Wrong checksum"
-
-    def test_objects_id_access_id(self):
-        """Get the URL to download that object"""
-        response = self.testapp.get(
-            f"{self.config.api_route}/objects/Test1/access/s3", status=200
-        )
-        assert "Test1" in response.json["url"], "No or wrong Url"  # noqa W503
