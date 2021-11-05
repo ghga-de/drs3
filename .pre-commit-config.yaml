@@ -50,7 +50,7 @@ repos:
       - id: mypy
         args: [--show-error-codes, --disable-error-code, import]
   - repo: https://github.com/PyCQA/pylint
-    rev: "v2.9.3"
+    rev: "v2.11.1"
     hooks:
       - id: pylint
         args: [--disable=E0401]

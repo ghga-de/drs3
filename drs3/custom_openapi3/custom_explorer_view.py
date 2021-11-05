@@ -61,11 +61,11 @@ def add_custom_explorer_view(  # pylint: disable=too-many-arguments
                     "You need to call config.pyramid_openapi3_spec for the explorer "
                     "to work."
                 )
-            with open(SWAGGER_HTML) as file:
+            with open(SWAGGER_HTML) as file:  # pylint: disable=unspecified-encoding
                 template = Template(file.read())
                 spec_url = (
                     custom_spec_url
-                    if custom_spec_url and custom_spec_url != "None"
+                    if custom_spec_url
                     else request.route_url(settings[apiname]["spec_route_name"])
                 )
                 html = template.safe_substitute(
