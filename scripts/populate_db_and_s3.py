@@ -29,6 +29,7 @@ from pathlib import Path
 import boto3
 import transaction
 import zope.sqlalchemy
+from botocore.client import ClientError
 from sqlalchemy.exc import IntegrityError
 
 from drs3.config import get_config
@@ -36,7 +37,7 @@ from drs3.dao.db import get_session
 from drs3.dao.db_models import DrsObject
 
 HERE = Path(__file__).parent.resolve()
-DIR_PATH = HERE.parent.resolve() / "examples"
+DIR_PATH = HERE.parent.resolve() / "example_data"
 S3_URL = get_config().s3_url
 
 
@@ -69,9 +70,9 @@ def populate_database():
 
     # Remove remnants of previous tests
     s3_bucket = s3.Bucket("test")
-    if s3_bucket:
+    try:
         s3_bucket.objects.all().delete()
-    else:
+    except ClientError:
         # Create bucket "test" if it does not exist
         s3_bucket = s3.create_bucket(Bucket="test")
 
@@ -133,8 +134,10 @@ def remove_test_files():
 
     # Remove test files from bucket
     bucket = s3_client.Bucket("test")
-    if bucket:
+    try:
         bucket.objects.all().delete()
+    except ClientError:
+        pass
 
 
 if __name__ == "__main__":
