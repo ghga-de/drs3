@@ -121,7 +121,7 @@ def remove_test_files():
     with transaction.manager:
         db = get_session()
         zope.sqlalchemy.register(db, transaction.manager)
-        db.query(DrsObject).filter(DrsObject.drs_id.like("Test%")).delete(
+        db.query(DrsObject).filter(DrsObject.drs_id.like("test_file%")).delete(
             synchronize_session=False
         )
         db.flush()
