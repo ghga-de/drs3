@@ -55,7 +55,7 @@ All parameters mentioned in the [`./example-config.yaml`](./example-config.yaml)
 could also be set using environment variables or file secrets.
 
 For naming the environment variables, just prefix the parameter name with `drs3_`,
-e.g. for the `host` set an environment variable named `drs3_HOST`
+e.g. for the `host` set an environment variable named `drs3_host`
 (you may use both upper or lower cases, however, it is standard to define all env
 variables in upper cases).
 
