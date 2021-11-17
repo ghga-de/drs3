@@ -67,17 +67,17 @@ class DatabaseDao(DaoGenericBase):
         - DrsObjectAlreadyExistsError
     """
 
-    def get_file_info(self, external_id: str) -> models.DrsObjectComplete:
-        """Get information for a file by specifying its external ID"""
+    def get_drs_object(self, external_id: str) -> models.DrsObjectComplete:
+        """Get DRS object from the database"""
         ...
 
-    def register_file_info(self, file_info: models.DrsObjectExternal) -> None:
-        """Register information for a new to the database."""
+    def register_drs_object(self, drs_object: models.DrsObjectExternal) -> None:
+        """Register a new DRS object to the database."""
         ...
 
-    def unregister_file_info(self, external_id: str) -> None:
+    def unregister_drs_object(self, external_id: str) -> None:
         """
-        Unregister information for a file with the specified external ID from the database.
+        Unregister a new DRS object with the specified external ID from the database.
         """
         ...
 
@@ -108,48 +108,48 @@ class PostgresDatabase(DatabaseDao):
         """Teardown database connection"""
         self._session_cm.__exit__(error_type, error_value, error_traceback)
 
-    def _get_orm_file_info(self, external_id: str) -> db_models.DrsObject:
-        """Internal method to get the ORM representation of a file info by specifying
+    def _get_orm_drs_object(self, external_id: str) -> db_models.DrsObject:
+        """Internal method to get the ORM representation of a drs object by specifying
         its external ID"""
 
         statement = select(db_models.DrsObject).filter_by(external_id=external_id)
-        orm_file_info = self._session.execute(statement).scalars().one_or_none()
+        orm_drs_object = self._session.execute(statement).scalars().one_or_none()
 
-        if orm_file_info is None:
+        if orm_drs_object is None:
             raise DrsObjectNotFoundError(external_id=external_id)
 
-        return orm_file_info
+        return orm_drs_object
 
-    def get_file_info(self, external_id: str) -> models.DrsObjectComplete:
-        """Get information for a file by specifying its external ID"""
+    def get_drs_object(self, external_id: str) -> models.DrsObjectComplete:
+        """Get DRS object from the database"""
 
-        orm_file_info = self._get_orm_file_info(external_id=external_id)
-        return models.DrsObjectComplete.from_orm(orm_file_info)
+        orm_drs_object = self._get_orm_drs_object(external_id=external_id)
+        return models.DrsObjectComplete.from_orm(orm_drs_object)
 
-    def register_file_info(self, file_info: models.DrsObjectExternal) -> None:
-        """Register information for a new file to the database."""
+    def register_drs_object(self, drs_object: models.DrsObjectExternal) -> None:
+        """Register a new DRS object to the database."""
 
         # check for collisions in the database:
         try:
-            self._get_orm_file_info(external_id=file_info.external_id)
+            self._get_orm_drs_object(external_id=drs_object.external_id)
         except DrsObjectNotFoundError:
             # this is expected
             pass
         else:
             # this is a problem
-            raise DrsObjectAlreadyExistsError(external_id=file_info.external_id)
+            raise DrsObjectAlreadyExistsError(external_id=drs_object.external_id)
 
-        file_info_dict = {
-            **file_info.dict(),
+        drs_object_dict = {
+            **drs_object.dict(),
             "registration_date": datetime.now(),
         }
-        orm_file_info = db_models.DrsObject(**file_info_dict)
-        self._session.add(orm_file_info)
+        orm_drs_object = db_models.DrsObject(**drs_object_dict)
+        self._session.add(orm_drs_object)
 
-    def unregister_file_info(self, external_id: str) -> None:
+    def unregister_drs_object(self, external_id: str) -> None:
         """
-        Unregister information for a file with the specified external ID from the database.
+        Unregister a new DRS object with the specified external ID from the database.
         """
 
-        orm_file_info = self._get_orm_file_info(external_id=external_id)
-        self._session.delete(orm_file_info)
+        orm_drs_object = self._get_orm_drs_object(external_id=external_id)
+        self._session.delete(orm_drs_object)
