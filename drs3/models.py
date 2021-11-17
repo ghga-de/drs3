@@ -1,4 +1,9 @@
+"""Defines dataclasses for holding business-logic data."""
+
+
+import re
 from datetime import datetime
+from typing import List, Literal
 
 from ghga_service_chassis_lib.object_storage_dao import (
     ObjectIdValidationError,
@@ -7,11 +12,9 @@ from ghga_service_chassis_lib.object_storage_dao import (
 from pydantic import UUID4, BaseModel, validator
 
 
-class DrsObjectExternal(BaseModel):
+class DrsObjectInitial(BaseModel):
     """
-    A model for communicating DrsObject metadata to external services.
-    This is missing the internal objerct ID `id` as well as the registration date as
-    this information shouldn't be shared with other services.
+    A model containing the metadata needed to register a new DRS object.
     """
 
     external_id: str
@@ -38,11 +41,59 @@ class DrsObjectExternal(BaseModel):
         orm_mode = True
 
 
-class DrsObjectComplete(DrsObjectExternal):
+class DrsObjectInternal(DrsObjectInitial):
     """
-    A model for describing the complete DrsObject metadata.
+    A model for describing all internally-relevant DrsObject metadata.
     Only intended for service-internal use.
     """
 
     id: UUID4
     registration_date: datetime
+
+
+class AccessURL(BaseModel):
+    """Describes the URL for accessing the actual bytes of the object as per the
+    DRS OpenApi spec."""
+
+    url: str
+
+
+class AccessMethod(BaseModel):
+    """A AccessMethod as per the DRS OpenApi spec."""
+
+    access_url: AccessURL
+    type: Literal["s3"] = "s3"  # currently only s3 is supported
+
+
+class Checksum(BaseModel):
+    """
+    A Checksum as per the DRS OpenApi specs.
+    """
+
+    checksum: str
+    type: Literal["md5", "sha-256"]
+
+
+class DrsObjectServe(BaseModel):
+    """
+    A model containing a DrsObject as per the DRS OpenApi specs.
+    This is used to serve metadata on a DrsObject (including the access methods) to the
+    user.
+    """
+
+    id: str  # the external ID
+    self_uri: str
+    size: int
+    created_time: str
+    checksums: List[Checksum]
+    access_methods: List[AccessMethod]
+
+    # pylint: disable=no-self-argument,no-self-use
+    @validator("self_uri")
+    def check_self_uri(cls, value: str):
+        """Checks if the self_uri is a valid DRS URI."""
+
+        if not re.match(r"^drs://.+\..+/.+", value):
+            ValueError(f"The self_uri '{value}' is no valid DRS URI.")
+
+        return value

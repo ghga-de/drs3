@@ -15,8 +15,7 @@
 
 """Config Parameter Modeling and Parsing"""
 
-from functools import lru_cache
-from typing import List, Literal, Optional
+from typing import Literal, Optional
 
 from ghga_service_chassis_lib.api import ApiConfigBase
 from ghga_service_chassis_lib.config import config_from_yaml

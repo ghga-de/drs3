@@ -67,11 +67,11 @@ class DatabaseDao(DaoGenericBase):
         - DrsObjectAlreadyExistsError
     """
 
-    def get_drs_object(self, external_id: str) -> models.DrsObjectComplete:
+    def get_drs_object(self, external_id: str) -> models.DrsObjectInternal:
         """Get DRS object from the database"""
         ...
 
-    def register_drs_object(self, drs_object: models.DrsObjectExternal) -> None:
+    def register_drs_object(self, drs_object: models.DrsObjectInitial) -> None:
         """Register a new DRS object to the database."""
         ...
 
@@ -120,13 +120,13 @@ class PostgresDatabase(DatabaseDao):
 
         return orm_drs_object
 
-    def get_drs_object(self, external_id: str) -> models.DrsObjectComplete:
+    def get_drs_object(self, external_id: str) -> models.DrsObjectInternal:
         """Get DRS object from the database"""
 
         orm_drs_object = self._get_orm_drs_object(external_id=external_id)
-        return models.DrsObjectComplete.from_orm(orm_drs_object)
+        return models.DrsObjectInternal.from_orm(orm_drs_object)
 
-    def register_drs_object(self, drs_object: models.DrsObjectExternal) -> None:
+    def register_drs_object(self, drs_object: models.DrsObjectInitial) -> None:
         """Register a new DRS object to the database."""
 
         # check for collisions in the database:

@@ -47,12 +47,12 @@ def hash_string(str_: str):
 
 
 PREPOPULATED_DRSOBJECT_FIXTURES = [
-    models.DrsObjectExternal(
+    models.DrsObjectInitial(
         external_id="GHGAF-02143324934345",
         md5_checksum=hash_string("something to hash 1"),
         size=1000,
     ),
-    models.DrsObjectExternal(
+    models.DrsObjectInitial(
         external_id="GHGAF-23429923423423",
         md5_checksum=hash_string("something to hash 2"),
         size=2000,
@@ -61,12 +61,12 @@ PREPOPULATED_DRSOBJECT_FIXTURES = [
 
 
 ADDITIONAL_DRSOBJECT_FIXTURES = [
-    models.DrsObjectExternal(
+    models.DrsObjectInitial(
         external_id="GHGAF-29992342342234",
         md5_checksum=hash_string("something to hash 3"),
         size=3000,
     ),
-    models.DrsObjectExternal(
+    models.DrsObjectInitial(
         external_id="GHGAF-50098123865883",
         md5_checksum=hash_string("something to hash 4"),
         size=4000,
