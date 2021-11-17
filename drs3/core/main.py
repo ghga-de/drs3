@@ -14,24 +14,3 @@
 # limitations under the License.
 
 """Main business-logic of this service"""
-
-from ..config import Config, config
-from ..dao import Database, ObjectStorage
-
-
-def serve_drs_object(external_file_id: str, config_: Config = config):
-    """Copies a file into the outbox bucket."""
-
-    # get file info from the database:
-    # (will throw an error if file not in registry)
-    with Database() as database:
-        file_info = database.get_file_info(external_file_id)
-
-    # copy file object to the outbox bucket:
-    with ObjectStorage() as storage:
-        storage.copy_object(
-            source_bucket_id=file_info.grouping_label,
-            source_object_id=external_file_id,
-            dest_bucket_id=config_.s3_outbox_bucket_id,
-            dest_object_id=external_file_id,
-        )
