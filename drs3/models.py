@@ -1,16 +1,48 @@
-# Copyright 2021 Universität Tübingen, DKFZ and EMBL
-# for the German Human Genome-Phenome Archive (GHGA)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+from datetime import datetime
 
-"""Defines all dataclasses/classes pertaining to a data model or schema"""
+from ghga_service_chassis_lib.object_storage_dao import (
+    ObjectIdValidationError,
+    validate_object_id,
+)
+from pydantic import UUID4, BaseModel, validator
+
+
+class DrsObjectExternal(BaseModel):
+    """
+    A model for communicating DrsObject metadata to external services.
+    This is missing the internal objerct ID `id` as well as the registration date as
+    this information shouldn't be shared with other services.
+    """
+
+    external_id: str
+    md5_checksum: str
+    size: int
+
+    # pylint: disable=no-self-argument,no-self-use
+    @validator("external_id")
+    def check_external_id(cls, value: str):
+        """Checks if the external_id is valid for use as a s3 object id."""
+
+        try:
+            validate_object_id(value)
+        except ObjectIdValidationError as error:
+            raise ValueError(
+                f"External ID '{value}' cannot be used as a (S3) object id."
+            ) from error
+
+        return value
+
+    class Config:
+        """Additional pydantic configs."""
+
+        orm_mode = True
+
+
+class DrsObjectComplete(DrsObjectExternal):
+    """
+    A model for describing the complete DrsObject metadata.
+    Only intended for service-internal use.
+    """
+
+    id: UUID4
+    registration_date: datetime

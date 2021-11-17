@@ -13,43 +13,143 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Connect to Database
-"""
+"""Database DAO"""
 
-import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
-from zope.sqlalchemy import register
+from datetime import datetime
+from typing import Any, Optional
 
-from ..config import get_config
+from ghga_service_chassis_lib.postgresql import SyncPostgresqlConnector
+from ghga_service_chassis_lib.utils import DaoGenericBase
+from sqlalchemy.future import select
 
-SQLALCHEMY_DATABASE_URL = get_config().db_url
+from .. import models
+from ..config import config
+from . import db_models
+
+psql_connector = SyncPostgresqlConnector(config)
 
 
-def get_engine(db_url: str) -> sqlalchemy.engine:
+class DrsObjectNotFoundError(RuntimeError):
+    """Thrown when trying to access a DrsObject with an external ID that doesn't
+    exist in the database."""
+
+    def __init__(self, external_id: Optional[str]):
+        message = (
+            "The DRS Object"
+            + (f" with external ID '{external_id}' " if external_id else "")
+            + " does not exist in the database."
+        )
+        super().__init__(message)
+
+
+class DrsObjectAlreadyExistsError(RuntimeError):
+    """Thrown when trying to create a new DrsObject with an external ID that already
+    exist in the database."""
+
+    def __init__(self, external_id: Optional[str]):
+        message = (
+            "The DRS object"
+            + (f" with external ID '{external_id}' " if external_id else "")
+            + " already exist in the database."
+        )
+        super().__init__(message)
+
+
+# Since this is just a DAO stub without implementation, following pylint error are
+# expected:
+# pylint: disable=unused-argument,no-self-use
+class DatabaseDao(DaoGenericBase):
     """
-    Get sqlalchemy engine
-    Args:
-        db_url: the database URL
-    Returns:
-        An instance of a SQLAlchemy engine
+    A DAO base class for interacting with the database.
+
+    It might throw following exception to communicate selected error events:
+        - DrsObjectNotFoundError
+        - DrsObjectAlreadyExistsError
     """
-    return create_engine(db_url)
+
+    def get_file_info(self, external_id: str) -> models.DrsObjectComplete:
+        """Get information for a file by specifying its external ID"""
+        ...
+
+    def register_file_info(self, file_info: models.DrsObjectExternal) -> None:
+        """Register information for a new to the database."""
+        ...
+
+    def unregister_file_info(self, external_id: str) -> None:
+        """
+        Unregister information for a file with the specified external ID from the database.
+        """
+        ...
 
 
-engine = get_engine(SQLALCHEMY_DATABASE_URL)
-DBSession = scoped_session(sessionmaker(bind=engine))
-register(DBSession)
-
-Base = declarative_base()
-
-
-def get_session() -> scoped_session:
+class PostgresDatabase(DatabaseDao):
     """
-    Returns the database session
-    Returns:
-        An instance of ``DBSession``
+    An implementation of the  DatabaseDao interface using a PostgreSQL backend.
     """
-    return DBSession()
+
+    def __init__(self, postgresql_connector: SyncPostgresqlConnector = psql_connector):
+        """initialze DAO implementation"""
+
+        super().__init__()
+        self._postgresql_connector = postgresql_connector
+
+        # will be defined on __enter__:
+        self._session_cm: Any = None
+        self._session: Any = None
+
+    def __enter__(self):
+        """Setup database connection"""
+
+        self._session_cm = self._postgresql_connector.transactional_session()
+        self._session = self._session_cm.__enter__()
+        return self
+
+    def __exit__(self, error_type, error_value, error_traceback):
+        """Teardown database connection"""
+        self._session_cm.__exit__(error_type, error_value, error_traceback)
+
+    def _get_orm_file_info(self, external_id: str) -> db_models.DrsObject:
+        """Internal method to get the ORM representation of a file info by specifying
+        its external ID"""
+
+        statement = select(db_models.DrsObject).filter_by(external_id=external_id)
+        orm_file_info = self._session.execute(statement).scalars().one_or_none()
+
+        if orm_file_info is None:
+            raise DrsObjectNotFoundError(external_id=external_id)
+
+        return orm_file_info
+
+    def get_file_info(self, external_id: str) -> models.DrsObjectComplete:
+        """Get information for a file by specifying its external ID"""
+
+        orm_file_info = self._get_orm_file_info(external_id=external_id)
+        return models.DrsObjectComplete.from_orm(orm_file_info)
+
+    def register_file_info(self, file_info: models.DrsObjectExternal) -> None:
+        """Register information for a new file to the database."""
+
+        # check for collisions in the database:
+        try:
+            self._get_orm_file_info(external_id=file_info.external_id)
+        except DrsObjectNotFoundError:
+            # this is expected
+            pass
+        else:
+            # this is a problem
+            raise DrsObjectAlreadyExistsError(external_id=file_info.external_id)
+
+        file_info_dict = {
+            **file_info.dict(),
+            "registration_date": datetime.now(),
+        }
+        orm_file_info = db_models.DrsObject(**file_info_dict)
+        self._session.add(orm_file_info)
+
+    def unregister_file_info(self, external_id: str) -> None:
+        """
+        Unregister information for a file with the specified external ID from the database.
+        """
+
+        orm_file_info = self._get_orm_file_info(external_id=external_id)
+        self._session.delete(orm_file_info)
