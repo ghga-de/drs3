@@ -1,4 +1,4 @@
-# Copyright 2021 Universität Tübingen, DKFZ and EMBL
+# Copyright 2021 - 2022 Universität Tübingen, DKFZ and EMBL
 # for the German Human Genome-Phenome Archive (GHGA)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,5 +18,10 @@ Subpackage defineing functions for publishing to or subscribing from
 asynchronous messaging topics.
 """
 
+<<<<<<< HEAD
 from .publish import publish_drs_object_registered, publish_stage_request  # noqa: F401
 from .subscribe import subscribe_file_registered, subscribe_file_staged  # noqa: F401
+=======
+from .publish import publish_stage_request  # noqa: F401
+from .subscribe import subscribe_file_staged  # noqa: F401
+>>>>>>> 6a974ee (Updated Licence, updated newest template changes)

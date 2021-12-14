@@ -1,4 +1,4 @@
-# Copyright 2021 Universität Tübingen, DKFZ and EMBL
+# Copyright 2021 - 2022 Universität Tübingen, DKFZ and EMBL
 # for the German Human Genome-Phenome Archive (GHGA)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,12 @@
 
 """This sub-package contains the core functionality"""
 
+<<<<<<< HEAD
 from .main import (  # noqa: F401
     get_drs_object_serve,
     handle_registered_file,
     handle_staged_file,
 )
+=======
+from .main import get_drs_object_serve, handle_staged_file  # noqa: F401
+>>>>>>> 6a974ee (Updated Licence, updated newest template changes)
