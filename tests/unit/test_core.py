@@ -27,6 +27,7 @@ from drs3.dao import (
     DrsObjectNotFoundError,
     ObjectNotFoundError,
 )
+from drs3.models import DrsObjectInitial
 
 from ..fixtures import FILES, get_config, psql_fixture, s3_fixture  # noqa: F401
 
@@ -114,15 +115,20 @@ def test_handle_registered_file(
 ):
     # get config
     config = get_config(sources=[psql_fixture.config, s3_fixture.config])
-    message = FILES[file_name].message
+    drs_object = DrsObjectInitial(
+        file_id=FILES[file_name].message["file_id"],
+        registration_date=FILES[file_name].message["timestamp"],
+        md5_checksum=FILES[file_name].message["md5_checksum"],
+        size=1000,
+    )
 
     run = lambda: handle_registered_file(
-        message=message, publish_object_registered=dummy_function, config=config
+        drs_object=drs_object, publish_object_registered=dummy_function, config=config
     )
 
     if expected_exception is None:
         run()
-        assert psql_fixture.database.get_drs_object(message["file_id"])
+        assert psql_fixture.database.get_drs_object(drs_object.file_id)
 
     else:
         with pytest.raises(expected_exception):
