@@ -73,7 +73,7 @@ class FileState:
             grouping_label=self.grouping_label,
             md5_checksum=self.md5,
             size=1000,  # not the real size
-            timestamp=datetime.now().isoformat(),
+            registration_date=datetime.now().isoformat(),
         )
 
         self.storage_objects: List[ObjectFixture] = []
