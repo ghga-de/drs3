@@ -77,7 +77,7 @@ def get_drs_object_serve(
 
 
 def handle_registered_file(
-    message: Dict[str, Any],
+    drs_object: DrsObjectInitial,
     publish_object_registered: Callable[[DrsObjectInitial, Config], None],
     config: Config = CONFIG,
 ):
@@ -85,14 +85,6 @@ def handle_registered_file(
     Add a new entry, based on the processed message, to the database and then publish
     a message that we did so
     """
-
-    # we add a fictional size for testing purposes, this function is currently not used
-    drs_object = DrsObjectInitial(
-        file_id=message["file_id"],
-        md5_checksum=message["md5_checksum"],
-        registration_date=message["timestamp"],
-        size=1000,
-    )
 
     # write file entry to database
     with Database(config=config) as database:

@@ -18,7 +18,6 @@ Subscriptions to async topics
 """
 
 from pathlib import Path
-from typing import Callable
 
 from ghga_service_chassis_lib.pubsub import AmqpTopic
 
@@ -42,16 +41,24 @@ def process_file_staged_message(message: dict, config):
 
 def process_file_registered_message(
     message: dict,
-    publish_object_registered: Callable[[DrsObjectInitial, Config], None],
     config,
 ):
     """
-    Processes the message by TODO
+    Processes the message, add file to database and
+    publish that the drs_object was registered
     """
 
+    # we add a fictional size for testing purposes, size is currently not used
+    drs_object = DrsObjectInitial(
+        file_id=message["file_id"],
+        md5_checksum=message["md5_checksum"],
+        registration_date=message["timestamp"],
+        size=1000,
+    )
+
     handle_registered_file(
-        message=message,
-        publish_object_registered=publish_object_registered,
+        drs_object=drs_object,
+        publish_object_registered=publish_drs_object_registered,
         config=config,
     )
 
@@ -96,7 +103,6 @@ def subscribe_file_registered(
     topic.subscribe(
         exec_on_message=lambda message: process_file_registered_message(
             message,
-            publish_object_registered=publish_drs_object_registered,
             config=config,
         ),
         run_forever=run_forever,
