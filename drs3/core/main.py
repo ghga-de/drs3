@@ -23,6 +23,7 @@ from ..models import (
     AccessMethod,
     AccessURL,
     Checksum,
+    DrsObjectInitial,
     DrsObjectInternal,
     DrsObjectServe,
 )
@@ -73,6 +74,24 @@ def get_drs_object_serve(
     )
 
     return None
+
+
+def handle_registered_file(message: Dict[str, Any], config: Config = CONFIG):
+    """
+    Add a new entry, based on the processed message, to the database
+    """
+
+    # we add a fictional size for testing purposes, this function is currently not used
+    drs_object = DrsObjectInitial(
+        file_id=message["file_id"],
+        md5_checksum=message["md5_checksum"],
+        registration_date=message["timestamp"],
+        size=1000,
+    )
+
+    # write file entry to database
+    with Database(config=config) as database:
+        database.register_drs_object(drs_object)
 
 
 def handle_staged_file(message: Dict[str, Any], config: Config = CONFIG):

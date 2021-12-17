@@ -15,5 +15,6 @@
 
 """Package containing schemas."""
 
+from .read_schemas import FILE_REGISTERED  # noqa: F401
 from .read_schemas import FILE_STAGED  # noqa: F401
 from .read_schemas import STAGE_REQUEST  # noqa: F401
