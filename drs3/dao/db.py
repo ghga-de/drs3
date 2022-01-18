@@ -15,7 +15,7 @@
 
 """Database DAO"""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from ghga_service_chassis_lib.postgresql import (
@@ -149,7 +149,7 @@ class PostgresDatabase(DatabaseDao):
 
         drs_object_dict = {
             **drs_object.dict(),
-            "registration_date": datetime.now(),
+            "registration_date": datetime.now(timezone.utc),
         }
         orm_drs_object = db_models.DrsObject(**drs_object_dict)
         self._session.add(orm_drs_object)

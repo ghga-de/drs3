@@ -15,7 +15,7 @@
 
 """Test the messaging API (pubsub)"""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ghga_message_schemas import schemas
 from ghga_service_chassis_lib.utils import exec_with_timeout
@@ -40,7 +40,7 @@ def test_publish_stage_request(amqp_fixture):  # noqa: F811
     drs_object = DrsObjectInternal(
         id=FILES["in_registry_not_in_storage"].id,
         file_id=FILES["in_registry_not_in_storage"].file_id,
-        registration_date=datetime.now(),
+        registration_date=datetime.now(timezone.utc),
         md5_checksum=FILES["in_registry_not_in_storage"].file_info.md5_checksum,
         size=FILES["in_registry_not_in_storage"].file_info.size,
     )
