@@ -19,11 +19,11 @@ Publish asynchronous topics
 
 from pathlib import Path
 
+from ghga_message_schemas import schemas
 from ghga_service_chassis_lib.pubsub import AmqpTopic
 
 from .. import models
 from ..config import CONFIG, Config
-from . import schemas
 
 HERE = Path(__file__).parent.resolve()
 
@@ -47,7 +47,7 @@ def publish_stage_request(
     topic = AmqpTopic(
         config=config,
         topic_name=topic_name,
-        json_schema=schemas.STAGE_REQUEST,
+        json_schema=schemas.NON_STAGED_FILE_REQUESTED,
     )
 
     topic.publish(message)

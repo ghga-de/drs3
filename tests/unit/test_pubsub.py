@@ -17,10 +17,11 @@
 
 from datetime import datetime
 
+from ghga_message_schemas import schemas
 from ghga_service_chassis_lib.utils import exec_with_timeout
 
 from drs3.models import DrsObjectInternal
-from drs3.pubsub import publish_stage_request, schemas, subscribe_file_staged
+from drs3.pubsub import publish_stage_request, subscribe_file_staged
 
 from ..fixtures import (  # noqa: F401
     FILES,
@@ -49,7 +50,7 @@ def test_publish_stage_request(amqp_fixture):  # noqa: F811
 
     downstream_subscriber = amqp_fixture.get_test_subscriber(
         topic_name=config.topic_name_stage_request,
-        message_schema=schemas.STAGE_REQUEST,
+        message_schema=schemas.NON_STAGED_FILE_REQUESTED,
     )
 
     # Call publish function
@@ -70,7 +71,7 @@ def test_subscribe_file_staged(psql_fixture, s3_fixture, amqp_fixture):  # noqa:
     # initialize upstream and downstream test services that will publish or receive
     upstream_publisher = amqp_fixture.get_test_publisher(
         topic_name=config.topic_name_file_staged,
-        message_schema=schemas.FILE_STAGED,
+        message_schema=schemas.FILE_STAGED_FOR_DOWNLOAD,
     )
 
     # publish a stage request:

@@ -19,11 +19,11 @@ Subscriptions to async topics
 
 from pathlib import Path
 
+from ghga_message_schemas import schemas
 from ghga_service_chassis_lib.pubsub import AmqpTopic
 
 from ..config import CONFIG, Config
 from ..core import handle_staged_file
-from . import schemas
 
 HERE = Path(__file__).parent.resolve()
 
@@ -46,7 +46,7 @@ def subscribe_file_staged(config: Config = CONFIG, run_forever: bool = True) -> 
     topic = AmqpTopic(
         config=config,
         topic_name=config.topic_name_file_staged,
-        json_schema=schemas.FILE_STAGED,
+        json_schema=schemas.FILE_STAGED_FOR_DOWNLOAD,
     )
 
     # subscribe:
