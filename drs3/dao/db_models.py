@@ -62,6 +62,25 @@ class DrsObject(Base):
         default=None,
         doc="Size of the object content in bytes.",
     )
-    registration_date = Column(
-        DateTime, nullable=False, doc="Date/time when the object was registered."
+    creation_date = Column(
+        DateTime,
+        nullable=False,
+        doc="Timestamp (in ISO 8601 format) when the entity was created.",
+    )
+    update_date = Column(
+        DateTime,
+        nullable=False,
+        doc="Timestamp (in ISO 8601 format) when the entity was updated.",
+    )
+    format = Column(
+        String,
+        nullable=False,
+        unique=False,
+        doc="The format of the file: BAM, SAM, CRAM, BAI, etc.",
+    )
+    size = Column(
+        Integer,
+        nullable=False,
+        unique=False,
+        doc="The size of the file in bytes.",
     )
