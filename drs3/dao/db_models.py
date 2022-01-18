@@ -58,7 +58,7 @@ class DrsObject(Base):
     )
     size = Column(
         Integer,
-        nullable=True,
+        nullable=False,
         default=None,
         doc="Size of the object content in bytes.",
     )
