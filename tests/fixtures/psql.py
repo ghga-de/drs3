@@ -32,8 +32,8 @@ from drs3.dao.db import PostgresDatabase
 
 from . import state
 
-existing_file_infos: List[models.DrsObjectInitial] = []
-non_existing_file_infos: List[models.DrsObjectInitial] = []
+existing_file_infos: List[models.DrsObjectBase] = []
+non_existing_file_infos: List[models.DrsObjectBase] = []
 
 for file in state.FILES.values():
     if file.populate_db:
@@ -42,7 +42,7 @@ for file in state.FILES.values():
         non_existing_file_infos.append(file.file_info)
 
 
-def populate_db(db_url: str, file_infos: List[models.DrsObjectInitial]):
+def populate_db(db_url: str, file_infos: List[models.DrsObjectBase]):
     """Create and populates the DB"""
 
     # setup database and tables:
@@ -68,8 +68,8 @@ class PsqlState:
 
     config: PostgresqlConfigBase
     database: PostgresDatabase
-    existing_file_infos: List[models.DrsObjectInitial]
-    non_existing_file_infos: List[models.DrsObjectInitial]
+    existing_file_infos: List[models.DrsObjectBase]
+    non_existing_file_infos: List[models.DrsObjectBase]
 
 
 @pytest.fixture

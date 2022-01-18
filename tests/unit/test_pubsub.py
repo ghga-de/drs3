@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from ghga_message_schemas import schemas
 from ghga_service_chassis_lib.utils import exec_with_timeout
 
-from drs3.models import DrsObjectInternal
+from drs3.models import DrsObjectBase
 from drs3.pubsub import publish_stage_request, subscribe_file_staged
 
 from ..fixtures import (  # noqa: F401
@@ -37,8 +37,7 @@ def test_publish_stage_request(amqp_fixture):  # noqa: F811
 
     config = get_config(sources=[amqp_fixture.config])
 
-    drs_object = DrsObjectInternal(
-        id=FILES["in_registry_not_in_storage"].id,
+    drs_object = DrsObjectBase(
         file_id=FILES["in_registry_not_in_storage"].file_id,
         registration_date=datetime.now(timezone.utc),
         md5_checksum=FILES["in_registry_not_in_storage"].file_info.md5_checksum,

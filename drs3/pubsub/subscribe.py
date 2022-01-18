@@ -25,7 +25,7 @@ from ghga_service_chassis_lib.pubsub import AmqpTopic
 
 from ..config import CONFIG, Config
 from ..core import handle_registered_file, handle_staged_file
-from ..models import DrsObjectInitial
+from ..models import DrsObjectBase
 from .publish import publish_drs_object_registered
 
 HERE = Path(__file__).parent.resolve()
@@ -49,12 +49,13 @@ def process_file_registered_message(
     publish that the drs_object was registered
     """
 
-    # we add a fictional size for testing purposes, size is currently not used
-    drs_object = DrsObjectInitial(
+    drs_object = DrsObjectBase(
         file_id=message["file_id"],
         md5_checksum=message["md5_checksum"],
-        registration_date=message["timestamp"],
-        size=1000,
+        size=message["size"],
+        creation_date=message["creation_date"],
+        update_date=message["update_date"],
+        format=message["format"],
     )
 
     handle_registered_file(

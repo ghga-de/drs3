@@ -28,19 +28,20 @@ from ..config import CONFIG, Config
 HERE = Path(__file__).parent.resolve()
 
 
-def publish_stage_request(
-    drs_object: models.DrsObjectInternal, config: Config = CONFIG
-):
+def publish_stage_request(drs_object: models.DrsObjectBase, config: Config = CONFIG):
     """
-    Publishes a message to a specified topic
+    Publishes a message to the non_staged_file_requested topic
     """
 
     topic_name = config.topic_name_stage_request
 
     message = {
-        "request_id": "",
         "file_id": drs_object.file_id,
-        "timestamp": drs_object.registration_date.isoformat(),
+        "md5_checksum": drs_object.md5_checksum,
+        "size": drs_object.size,
+        "creation_date": drs_object.creation_date.isoformat(),
+        "update_date": drs_object.update_date.isoformat(),
+        "format": drs_object.format,
     }
 
     # create a topic object:
@@ -54,20 +55,22 @@ def publish_stage_request(
 
 
 def publish_drs_object_registered(
-    drs_object: models.DrsObjectInitial, config: Config = CONFIG
+    drs_object: models.DrsObjectBase, config: Config = CONFIG
 ):
     """
-    Publishes a message to a specified topic
+    Publishes a message to the drs_object_registered topic
     """
 
     topic_name = config.topic_name_drs_object_registered
 
     message = {
-        "request_id": "",
         "file_id": drs_object.file_id,
-        "timestamp": drs_object.registration_date.isoformat(),
-        "md5_checksum": drs_object.md5_checksum,
         "drs_uri": f"{config.drs_self_url}/{drs_object.file_id}",
+        "md5_checksum": drs_object.md5_checksum,
+        "size": drs_object.size,
+        "creation_date": drs_object.creation_date.isoformat(),
+        "update_date": drs_object.update_date.isoformat(),
+        "format": drs_object.format,
     }
 
     # create a topic object:
