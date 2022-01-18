@@ -126,6 +126,30 @@
       ],
       "type": "integer"
     },
+    "api_root_path": {
+      "title": "Api Root Path",
+      "default": "/",
+      "env_names": [
+        "drs3_api_root_path"
+      ],
+      "type": "string"
+    },
+    "openapi_url": {
+      "title": "Openapi Url",
+      "default": "/openapi.json",
+      "env_names": [
+        "drs3_openapi_url"
+      ],
+      "type": "string"
+    },
+    "docs_url": {
+      "title": "Docs Url",
+      "default": "/docs",
+      "env_names": [
+        "drs3_docs_url"
+      ],
+      "type": "string"
+    },
     "cors_allowed_origins": {
       "title": "Cors Allowed Origins",
       "env_names": [
