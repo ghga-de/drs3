@@ -23,6 +23,8 @@ s3_outbox_bucket_id: outbox
 s3_secret_access_key: test
 s3_session_token: null
 service_name: drs3
+topic_name_drs_object_registered: drs-object-registered
+topic_name_file_registered: file-internally-registered
 topic_name_file_staged: file_staged_for_download
 topic_name_stage_request: non_staged_file_requested
 workers: 1

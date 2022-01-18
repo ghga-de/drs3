@@ -226,6 +226,22 @@
       ],
       "type": "string"
     },
+    "topic_name_file_registered": {
+      "title": "Topic Name File Registered",
+      "default": "file-internally-registered",
+      "env_names": [
+        "drs3_topic_name_file_registered"
+      ],
+      "type": "string"
+    },
+    "topic_name_drs_object_registered": {
+      "title": "Topic Name Drs Object Registered",
+      "default": "drs-object-registered",
+      "env_names": [
+        "drs3_topic_name_drs_object_registered"
+      ],
+      "type": "string"
+    },
     "s3_outbox_bucket_id": {
       "title": "S3 Outbox Bucket Id",
       "env_names": [
