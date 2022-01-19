@@ -74,7 +74,7 @@ def subscribe_file_staged(config: Config = CONFIG, run_forever: bool = True) -> 
     topic = AmqpTopic(
         config=config,
         topic_name=config.topic_name_file_staged,
-        json_schema=schemas.FILE_STAGED_FOR_DOWNLOAD,
+        json_schema=schemas.SCHEMAS["file_staged_for_download"],
     )
 
     # subscribe:
@@ -97,7 +97,7 @@ def subscribe_file_registered(
     topic = AmqpTopic(
         config=config,
         topic_name=config.topic_name_file_registered,
-        json_schema=schemas.FILE_INTERNALLY_REGISTERED,
+        json_schema=schemas.SCHEMAS["file_internally_registered"],
     )
 
     # subscribe:

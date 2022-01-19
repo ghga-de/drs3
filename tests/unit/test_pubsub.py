@@ -42,7 +42,7 @@ def test_publish_stage_request(amqp_fixture):  # noqa: F811
 
     downstream_subscriber = amqp_fixture.get_test_subscriber(
         topic_name=config.topic_name_stage_request,
-        message_schema=schemas.NON_STAGED_FILE_REQUESTED,
+        message_schema=schemas.SCHEMAS["non_staged_file_requested"],
     )
 
     # Call publish function
@@ -63,7 +63,7 @@ def test_subscribe_file_staged(psql_fixture, s3_fixture, amqp_fixture):  # noqa:
     # initialize upstream and downstream test services that will publish or receive
     upstream_publisher = amqp_fixture.get_test_publisher(
         topic_name=config.topic_name_file_staged,
-        message_schema=schemas.FILE_STAGED_FOR_DOWNLOAD,
+        message_schema=schemas.SCHEMAS["file_staged_for_download"],
     )
 
     # publish a stage request:

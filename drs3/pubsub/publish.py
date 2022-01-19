@@ -48,7 +48,7 @@ def publish_stage_request(drs_object: models.DrsObjectBase, config: Config = CON
     topic = AmqpTopic(
         config=config,
         topic_name=topic_name,
-        json_schema=schemas.NON_STAGED_FILE_REQUESTED,
+        json_schema=schemas.SCHEMAS["non_staged_file_requested"],
     )
 
     topic.publish(message)
@@ -77,7 +77,7 @@ def publish_drs_object_registered(
     topic = AmqpTopic(
         config=config,
         topic_name=topic_name,
-        json_schema=schemas.DRS_OBJECT_REGISTERED,
+        json_schema=schemas.SCHEMAS["drs_object_registered"],
     )
 
     topic.publish(message)
