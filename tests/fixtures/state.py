@@ -73,7 +73,8 @@ class FileState:
             grouping_label=self.grouping_label,
             md5_checksum=self.md5,
             size=1000,  # not the real size
-            registration_date=datetime.now().isoformat(),
+            creation_date=datetime.now(timezone.utc),
+            update_date=datetime.now(timezone.utc),
         )
 
         self.storage_objects: List[ObjectFixture] = []
@@ -99,8 +100,9 @@ FILES: Dict[str, FileState] = {
             "file_id": get_file_id_example(0),
             "grouping_label": get_study_id_example(0),
             "md5_checksum": "3851c5cb7518a2ff67ab5581c3e01f2f",  # fake checksum
-            "request_id": "my_test_file_staged_001",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "size": 1000,
+            "creation_date": datetime.now(timezone.utc).isoformat(),
+            "update_date": datetime.now(timezone.utc).isoformat(),
         },
     ),
     "in_registry_not_in_storage": FileState(
@@ -114,8 +116,9 @@ FILES: Dict[str, FileState] = {
             "file_id": get_file_id_example(1),
             "grouping_label": get_study_id_example(1),
             "md5_checksum": "3851c5cb7518a2ff67ab5581c3e01f2f",  # fake checksum
-            "request_id": "my_test_file_staged_002",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "size": 1000,
+            "creation_date": datetime.now(timezone.utc).isoformat(),
+            "update_date": datetime.now(timezone.utc).isoformat(),
         },
     ),
     "not_in_registry_not_in_storage": FileState(
@@ -129,8 +132,9 @@ FILES: Dict[str, FileState] = {
             "file_id": get_file_id_example(2),
             "grouping_label": get_study_id_example(2),
             "md5_checksum": "3851c5cb7518a2ff67ab5581c3e01f2f",  # fake checksum
-            "request_id": "my_test_file_staged_003",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "size": 1000,
+            "creation_date": datetime.now(timezone.utc).isoformat(),
+            "update_date": datetime.now(timezone.utc).isoformat(),
         },
     ),
 }
