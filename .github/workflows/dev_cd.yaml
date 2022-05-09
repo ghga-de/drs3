@@ -3,7 +3,7 @@ name: Dev CD
 on:
   push:
     branches:
-      - "dev"
+      - "main"
       # you may add other branches to
       # activate deployment for them, too.
 
@@ -67,7 +67,7 @@ jobs:
       - get_commit_version
       - push_to_docker_hub
     env:
-      DEPLOYMENT_CONFIG_REPO: ghga-de/sandbox-deployment-configs
+      DEPLOYMENT_CONFIG_REPO: ghga-de/helm
     steps:
       - name: trigger update in deployment repo
         run: |
